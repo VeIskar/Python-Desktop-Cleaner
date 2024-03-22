@@ -13,16 +13,21 @@ your_name = input("insert your username: ")
 #directories for the cleaner folders
 main_dir = f'C:/Users/{your_name}/Desktop'
 texts_dir = f'C:/Users/{your_name}/Desktop/text_files'
+image_dir = f'C:/Users/{your_name}/Desktop/image_files'
+
 #later add:downloads
 
 
 try:
     os.mkdir(texts_dir)
-    print("Folder %s succesfully created" % texts_dir)
+    os.mkdir(image_dir)
+    print("Folders %s succesfully created" % texts_dir, image_dir)
 except FileExistsError:
-    print("Folder %s already exists" % texts_dir)
+    print("Folders %s already exists" % texts_dir, image_dir)
 except FileNotFoundError:
    print("Folder cannot be created check username")
+except Exception as e:
+    print("Unknown error occured: ",e)
  
 
 #function for moving the files:
@@ -36,8 +41,10 @@ def move_to(destination, file, name):
             new_name = f"{current_name}_{i}{ext}"
 
             file_exists = os.path.isfile(destination + '/' + new_name)
+        name = new_name
+        os.rename(file,new_name)
     
-    shutil.move(file, destination)
+    shutil.move(file, os.path.join(destination, name)) #move(file,destination)
 
 
 #scandir returns list of all the files in selected folder
@@ -51,7 +58,13 @@ class MoveHandler(FileSystmeEventHandler):
 
               if name.endswith(('.txt', '.doc', '.docx', '.rtf', '.msg', '.pdf', '.asc', '.wpd', '.wps')):
                   destination = texts_dir
-                  #move function?
+                  move_to(destination, file,name)
+
+              if name.endswith(('.jpg', '.jpeg', '.png', '.ai', '.psd', '.gif', '.tiff', '.svg', '.webp')):
+                  destination = image_dir
+                  move_to(destination, file, name)
+
+            
 
               
         
