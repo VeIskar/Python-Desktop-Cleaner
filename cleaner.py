@@ -14,6 +14,9 @@ your_name = input("insert your username: ")
 main_dir = f'C:/Users/{your_name}/Desktop'
 texts_dir = f'C:/Users/{your_name}/Desktop/text_files'
 image_dir = f'C:/Users/{your_name}/Desktop/image_files'
+audio_dir = f'C:/Users/{your_name}/Desktop/audio_files'
+video_dir = f'C:/Users/{your_name}/Desktop/video_files'
+compressed_dir = f'C:/Users/{your_name}/Desktop/compressed_files'
 
 #later add:downloads
 
@@ -32,7 +35,7 @@ except Exception as e:
 
 #function for moving the files:
 def move_to(destination, file, name):
-    file_exists = os.path.isfile(destination + '/' + name)
+    file_exists = os.path.isfile(destination + '/' + name)  #checking if file of the same name exists
     if file_exists:
         i = 0
         while file_exists:
@@ -60,11 +63,21 @@ class MoveHandler(FileSystmeEventHandler):
                   destination = texts_dir
                   move_to(destination, file,name)
 
-              if name.endswith(('.jpg', '.jpeg', '.png', '.ai', '.psd', '.gif', '.tiff', '.svg', '.webp')):
+              elif name.endswith(('.jpg', '.jpeg', '.png', '.ai', '.psd', '.gif', '.tiff', '.svg', '.webp')):
                   destination = image_dir
                   move_to(destination, file, name)
-
-            
+              
+              elif name.endswith(('.mp3', '.wav', '.wma', '.midi', '.aac', '.aiff', '.flac')) or "SFX" in name:
+                  destination = audio_dir
+                  move_to(destination, file, name)
+              
+              elif name.endswith(('.mp4', '.avi', '.webm', '.mov', '.wmv', '.mpeg')):   
+                  destination = video_dir
+                  move_to(destination, file, name)
+              
+              elif name.endswith(('.zip', '.rar', '.7z', '.z', '.pkg', '.deb')):   
+                  destination = compressed_dir
+                  move_to(destination, file, name)
 
               
         
