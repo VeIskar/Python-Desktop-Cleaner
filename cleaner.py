@@ -10,16 +10,18 @@ from watchdog.events import LoggingEventHandler
 
 your_name = input("insert your username: ")
 
+
 #directories for the cleaner folders
-main_dir = f'C:/Users/{your_name}/Desktop'
+desktop_main_dir = f'C:/Users/{your_name}/Desktop'
 texts_dir = f'C:/Users/{your_name}/Desktop/text_files'
 image_dir = f'C:/Users/{your_name}/Desktop/image_files'
 audio_dir = f'C:/Users/{your_name}/Desktop/audio_files'
 video_dir = f'C:/Users/{your_name}/Desktop/video_files'
 compressed_dir = f'C:/Users/{your_name}/Desktop/compressed_files'
+data_dir = f'C:/Users/{your_name}/Desktop/data_files'
 
-#later add:downloads
-
+#downloads
+downloads_main_dir = f'C:/Users/{your_name}/Downloads'
 
 try:
     os.mkdir(texts_dir)
@@ -32,6 +34,18 @@ except FileNotFoundError:
 except Exception as e:
     print("Unknown error occured: ",e)
  
+
+track_dir = input("would you like to clean the downloads folder or desktop?")
+#main_dir = ''
+if track_dir in ["downloads", "downloads folder", "downloaded", "downloaded folder", "download", "downloaded fiels"]:
+    main_dir = downloads_main_dir
+
+elif track_dir in ["desktop", "Desktop", "DESKTOP"]:
+    main_dir = desktop_main_dir
+
+else:
+    print("not recognized")
+
 
 #function for moving the files:
 def move_to(destination, file, name):
@@ -77,6 +91,10 @@ class MoveHandler(FileSystmeEventHandler):
               
               elif name.endswith(('.zip', '.rar', '.7z', '.z', '.pkg', '.deb')):   
                   destination = compressed_dir
+                  move_to(destination, file, name)
+              
+              elif name.endswith(('.csv', '.dat', '.db', '.dbf', '.log', '.xml','.json', '.sql', '.sav')):   
+                  destination = data_dir
                   move_to(destination, file, name)
 
               
