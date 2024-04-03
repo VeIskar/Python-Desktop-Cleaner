@@ -23,28 +23,35 @@ data_dir = f'C:/Users/{your_name}/Desktop/data_files'
 #downloads
 downloads_main_dir = f'C:/Users/{your_name}/Downloads'
 
-try:
-    os.mkdir(texts_dir)
-    os.mkdir(image_dir)
-    print("Folders %s succesfully created" % texts_dir, image_dir)
-except FileExistsError:
-    print("Folders %s already exists" % texts_dir, image_dir)
-except FileNotFoundError:
-   print("Folder cannot be created check username")
-except Exception as e:
-    print("Unknown error occured: ",e)
- 
 
 track_dir = input("would you like to clean the downloads folder or desktop?")
-#main_dir = ''
-if track_dir in ["downloads", "downloads folder", "downloaded", "downloaded folder", "download", "downloaded fiels"]:
-    main_dir = downloads_main_dir
 
-elif track_dir in ["desktop", "Desktop", "DESKTOP"]:
-    main_dir = desktop_main_dir
+def correspondence_check(username,track_opt):
+    main_dir = None
+    try:
+        os.mkdir(texts_dir)
+        os.mkdir(image_dir)
+        os.mkdir(audio_dir)
+        os.mkdir(video_dir)
+        os.mkdir(compressed_dir)
+        os.mkdir(data_dir)
+        print("Folders:  %s\t \nsuccesfully created" % texts_dir, image_dir, audio_dir, video_dir, compressed_dir, data_dir)
 
-else:
-    print("not recognized")
+        if track_opt in ["downloads", "downloads folder", "downloaded", "downloaded folder", "download", "downloaded files"]:
+            main_dir = downloads_main_dir
+        elif track_opt in ["desktop", "DESKTOP"]:
+            main_dir = desktop_main_dir
+        else:
+            print("Main directory not recognized.")
+
+    except FileExistsError:
+        print("Folders:  %s\t \nalready exists" % texts_dir)
+    except FileNotFoundError:
+        print("Folder cannot be created check username")
+    except Exception as e:
+        print("Unknown error occured: ",e)
+    
+    return main_dir
 
 
 #function for moving the files:
@@ -63,6 +70,7 @@ def move_to(destination, file, name):
     
     shutil.move(file, os.path.join(destination, name)) #move(file,destination)
 
+main_dir = correspondence_check(your_name,track_dir)
 
 #scandir returns list of all the files in selected folder
    
