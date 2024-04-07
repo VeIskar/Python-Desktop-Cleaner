@@ -5,8 +5,9 @@ import shutil
 import sys
 import logging
 from watchdog.observers import Observer
-from watchdog.events import FileSystmeEventHandler
+from watchdog.events import FileSystemEventHandler
 from watchdog.events import LoggingEventHandler
+import datetime
 
 your_name = input("insert your username: ")
 
@@ -56,7 +57,16 @@ def correspondence_check(username,track_opt):
 
 #function for moving the files:
 def move_to(destination, file, name):
-    file_exists = os.path.isfile(destination + '/' + name)  #checking if file of the same name exists
+    year = datetime.now().year
+    month = datetime.now().month
+
+    year_month_folder_name = f"{year}_{month}"
+    year_month_folder = os.path.join(destination, year_month_folder_name)
+
+    if not os.path.exists(year_month_folder):
+        os.mkdir(year_month_folder)
+
+    file_exists = os.path.isfile(os.path.join(year_month_folder + '/' + name))  #checking if file of the same name exists
     if file_exists:
         i = 0
         while file_exists:
@@ -68,13 +78,13 @@ def move_to(destination, file, name):
         name = new_name
         os.rename(file,new_name)
     
-    shutil.move(file, os.path.join(destination, name)) #move(file,destination)
+    shutil.move(file, os.path.join(year_month_folder, name)) #move(file,destination)
 
 main_dir = correspondence_check(your_name,track_dir)
 
 #scandir returns list of all the files in selected folder
    
-class MoveHandler(FileSystmeEventHandler):
+class MoveHandler(FileSystemEventHandler):
     def on_modified(self, event):
       with os.scandir(main_dir) as all_files:
           for file in all_files:
