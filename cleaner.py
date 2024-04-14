@@ -9,25 +9,26 @@ from watchdog.events import FileSystemEventHandler
 from watchdog.events import LoggingEventHandler
 import datetime
 
-your_name = input("insert your username: ")
 
+desktop_main_dir = os.path.join(os.path.expanduser('~'), 'Desktop')
+texts_dir = os.path.join(desktop_main_dir, 'text_files')
 
 #directories for the cleaner folders
-desktop_main_dir = f'C:/Users/{your_name}/Desktop'
-texts_dir = f'C:/Users/{your_name}/Desktop/text_files'
-image_dir = f'C:/Users/{your_name}/Desktop/image_files'
-audio_dir = f'C:/Users/{your_name}/Desktop/audio_files'
-video_dir = f'C:/Users/{your_name}/Desktop/video_files'
-compressed_dir = f'C:/Users/{your_name}/Desktop/compressed_files'
-data_dir = f'C:/Users/{your_name}/Desktop/data_files'
+desktop_main_dir = os.path.join(os.path.expanduser('~'), 'Desktop')
+texts_dir = os.path.join(desktop_main_dir, 'text_files')
+image_dir = os.path.join(desktop_main_dir, 'image_files')
+audio_dir = os.path.join(desktop_main_dir, 'audio_files')
+video_dir = os.path.join(desktop_main_dir, 'video_files')
+compressed_dir = os.path.join(desktop_main_dir, 'compressed_files')
+data_dir = os.path.join(desktop_main_dir, 'data_files')
 
 #downloads
-downloads_main_dir = f'C:/Users/{your_name}/Downloads'
+downloads_main_dir = os.path.join(os.path.expanduser('~'), 'Downloads')
 
 
 track_dir = input("would you like to clean the downloads folder or desktop?")
 
-def correspondence_check(username,track_opt):
+def correspondence_check(track_opt):
     main_dir = None
     try:
         os.mkdir(texts_dir)
@@ -40,13 +41,13 @@ def correspondence_check(username,track_opt):
 
         if track_opt in ["downloads", "downloads folder", "downloaded", "downloaded folder", "download", "downloaded files"]:
             main_dir = downloads_main_dir
-        elif track_opt in ["desktop", "DESKTOP"]:
+        elif track_opt in ["desktop", "DESKTOP","Desktop" , "desktop folder"]:
             main_dir = desktop_main_dir
         else:
             print("Main directory not recognized.")
 
     except FileExistsError:
-        print("Folders:  %s\t \nalready exists" % texts_dir)
+        print("Folders:  %s\t \nalready exists" % texts_dir, image_dir, audio_dir, video_dir, compressed_dir, data_dir)
     except FileNotFoundError:
         print("Folder cannot be created check username")
     except Exception as e:
@@ -54,19 +55,27 @@ def correspondence_check(username,track_opt):
     
     return main_dir
 
+#function for creating the year/month folder
+def create_yr_mn(destination):
+    year = datetime.datetime.now().year
+    month = datetime.datetime.now().month
 
-#function for moving the files:
-def move_to(destination, file, name):
-    year = datetime.now().year
-    month = datetime.now().month
+    yr_mn_folder = f"{year}_{month}"
 
-    year_month_folder_name = f"{year}_{month}"
-    year_month_folder = os.path.join(destination, year_month_folder_name)
+    year_month_folder = os.path.join(destination, yr_mn_folder)
 
     if not os.path.exists(year_month_folder):
         os.mkdir(year_month_folder)
 
-    file_exists = os.path.isfile(os.path.join(year_month_folder + '/' + name))  #checking if file of the same name exists
+    return year_month_folder
+
+
+#function for moving the files:
+def move_to(destination, file, name):
+
+    yr_mn_dir = create_yr_mn(destination)
+
+    file_exists = os.path.isfile(os.path.join(yr_mn_dir, new_name))  #checking if file of the same name exists
     if file_exists:
         i = 0
         while file_exists:
@@ -74,13 +83,15 @@ def move_to(destination, file, name):
             current_name, ext = os.path.splitext(name)
             new_name = f"{current_name}_{i}{ext}"
 
-            file_exists = os.path.isfile(destination + '/' + new_name)
+            file_exists = os.path.isfile(os.path.join(yr_mn_dir, new_name))
         name = new_name
-        os.rename(file,new_name)
-    
-    shutil.move(file, os.path.join(year_month_folder, name)) #move(file,destination)
 
-main_dir = correspondence_check(your_name,track_dir)
+        os.rename(file, os.path.join(yr_mn_dir, new_name))
+    
+    shutil.move(file, os.path.join(yr_mn_dir, name)) #move(file,destination)
+
+
+main_dir = correspondence_check(track_dir)
 
 #scandir returns list of all the files in selected folder
    
